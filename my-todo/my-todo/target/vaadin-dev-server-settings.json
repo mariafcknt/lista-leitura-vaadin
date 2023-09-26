@@ -1,0 +1,17 @@
+{
+  "frontendFolder": "C:/Users/1111010243/Downloads/my-todo/my-todo/./frontend",
+  "themeFolder": "themes",
+  "themeResourceFolder": "C:/Users/1111010243/Downloads/my-todo/my-todo/./frontend/generated/jar-resources",
+  "staticOutput": "C:/Users/1111010243/Downloads/my-todo/my-todo/target/classes/META-INF/VAADIN/webapp/VAADIN/static",
+  "generatedFolder": "generated",
+  "statsOutput": "C:\\Users\\1111010243\\Downloads\\my-todo\\my-todo\\target\\classes\\META-INF\\VAADIN\\config",
+  "frontendBundleOutput": "C:\\Users\\1111010243\\Downloads\\my-todo\\my-todo\\target\\classes\\META-INF\\VAADIN\\webapp",
+  "devBundleOutput": "C:/Users/1111010243/Downloads/my-todo/my-todo/src/main/dev-bundle/webapp",
+  "devBundleStatsOutput": "C:/Users/1111010243/Downloads/my-todo/my-todo/src/main/dev-bundle/config",
+  "jarResourcesFolder": "C:/Users/1111010243/Downloads/my-todo/my-todo/./frontend/generated/jar-resources",
+  "themeName": "mytodo",
+  "clientServiceWorkerSource": "C:\\Users\\1111010243\\Downloads\\my-todo\\my-todo\\target\\sw.ts",
+  "pwaEnabled": false,
+  "offlineEnabled": false,
+  "offlinePath": "'offline.html'"
+}
