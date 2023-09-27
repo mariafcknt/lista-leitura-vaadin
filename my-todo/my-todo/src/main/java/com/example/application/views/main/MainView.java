@@ -4,12 +4,15 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.Grid.SelectionMode;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.component.html.H1;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Route("livros")
 public class MainView extends VerticalLayout {
@@ -20,8 +23,13 @@ public class MainView extends VerticalLayout {
     private DatePicker dataConclusao = new DatePicker("Data de Conclusão de Leitura");
     private TextField avaliacao = new TextField("Avaliação (de 1 a 5)");
     private Button adicionarLivro = new Button("Adicionar Livro");
+    private Button editarLivro = new Button("Salvar Edição");
+    private Button excluirLivro = new Button("Excluir Livro");
 
     private Grid<Livro> grid = new Grid<>(Livro.class);
+    private Livro livroEmEdicao = null;
+
+    private List<Livro> livros = new ArrayList<>();
 
     public MainView() {
         // Configurações iniciais
@@ -41,11 +49,20 @@ public class MainView extends VerticalLayout {
         // Configura o botão "Adicionar Livro"
         adicionarLivro.addClickListener(event -> adicionarLivro());
 
-        // Configura a tabela
+        // Configura os botões de edição e exclusão
+        editarLivro.setEnabled(false);
+        editarLivro.addClickListener(event -> salvarEdicao());
+        excluirLivro.setEnabled(false);
+        excluirLivro.addClickListener(event -> excluirLivro());
+
+        // Configura a grade
         grid.setColumns("nome", "autor", "terminouLeitura", "dataConclusao", "avaliacao");
+        grid.setSelectionMode(SelectionMode.SINGLE);
+        grid.asSingleSelect().addValueChangeListener(event -> editarLivro(event.getValue()));
+        grid.setItems(livros);
 
         // Adiciona componentes ao layout
-        add(nomeLivro, autorLivro, terminouLeitura, dataConclusao, avaliacao, adicionarLivro, grid);
+        add(nomeLivro, autorLivro, terminouLeitura, dataConclusao, avaliacao, adicionarLivro, editarLivro, excluirLivro, grid);
     }
 
     private void toggleCamposConclusao() {
@@ -62,14 +79,61 @@ public class MainView extends VerticalLayout {
             avaliacao.getValue()
         );
 
-        grid.setItems(livro); // Use setItems para adicionar o livro à tabela
+        livros.add(livro);
+        grid.setItems(livros);
 
         // Limpa os campos após adicionar o livro
+        limparCampos();
+    }
+
+    private void editarLivro(Livro livro) {
+        if (livro != null) {
+            livroEmEdicao = livro;
+            nomeLivro.setValue(livro.getNome());
+            autorLivro.setValue(livro.getAutor());
+            terminouLeitura.setValue(livro.isTerminouLeitura());
+            dataConclusao.setValue(livro.getDataConclusao());
+            avaliacao.setValue(livro.getAvaliacao());
+
+            editarLivro.setEnabled(true);
+            excluirLivro.setEnabled(true);
+        } else {
+            limparCampos();
+        }
+    }
+
+    private void salvarEdicao() {
+        if (livroEmEdicao != null) {
+            livroEmEdicao.setNome(nomeLivro.getValue());
+            livroEmEdicao.setAutor(autorLivro.getValue());
+            livroEmEdicao.setTerminouLeitura(terminouLeitura.getValue());
+            livroEmEdicao.setDataConclusao(dataConclusao.getValue());
+            livroEmEdicao.setAvaliacao(avaliacao.getValue());
+
+            grid.getDataProvider().refreshAll();
+
+            limparCampos();
+        }
+    }
+
+    private void excluirLivro() {
+        if (livroEmEdicao != null) {
+            livros.remove(livroEmEdicao);
+            grid.setItems(livros);
+
+            limparCampos();
+        }
+    }
+
+    private void limparCampos() {
+        livroEmEdicao = null;
         nomeLivro.clear();
         autorLivro.clear();
         terminouLeitura.clear();
         dataConclusao.clear();
         avaliacao.clear();
+        editarLivro.setEnabled(false);
+        excluirLivro.setEnabled(false);
     }
 
     public static class Livro {
@@ -91,20 +155,40 @@ public class MainView extends VerticalLayout {
             return nome;
         }
 
+        public void setNome(String nome) {
+            this.nome = nome;
+        }
+
         public String getAutor() {
             return autor;
+        }
+
+        public void setAutor(String autor) {
+            this.autor = autor;
         }
 
         public boolean isTerminouLeitura() {
             return terminouLeitura;
         }
 
+        public void setTerminouLeitura(boolean terminouLeitura) {
+            this.terminouLeitura = terminouLeitura;
+        }
+
         public LocalDate getDataConclusao() {
             return dataConclusao;
         }
 
+        public void setDataConclusao(LocalDate dataConclusao) {
+            this.dataConclusao = dataConclusao;
+        }
+
         public String getAvaliacao() {
             return avaliacao;
+        }
+
+        public void setAvaliacao(String avaliacao) {
+            this.avaliacao = avaliacao;
         }
     }
 }
