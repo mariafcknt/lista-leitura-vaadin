@@ -39,23 +39,16 @@ public class MainView extends VerticalLayout {
         setClassName("main-view");
 
         // Defina o estilo de fundo para azul claro
-        //getStyle().set("background-color", "lightblue");
-
-       // Configura o evento de alteração da checkbox "terminouLeitura"
-        terminouLeitura.addValueChangeListener(event -> toggleCamposConclusao());
-
-        // Inicialmente, oculta os campos de data de conclusão e avaliação
-        dataConclusao.setVisible(false);
-        avaliacao.setVisible(false);
+        //getStyle().set("background-color", "lightgray");
 
         // Configura o botão "Adicionar Livro" com o ícone
         adicionarLivro.setIcon(VaadinIcon.PLUS.create());
         adicionarLivro.addClickListener(event -> adicionarLivro());
 
         // Adiciona o título "Adicione seus livros!" usando o elemento H1
-        add(new H1("Adicione seus livros!"));
+        add(new H1("Lista de leitura - adicione seus livros!"));
 
-        add(new Paragraph("Após ter adicionado o livro, caso queira editar as informações dele, selecione-o na tabela, faça a edição e depois clique em \"Salvar Edição\". Caso queira excluí-lo, selecione-o na tabela e clique em \"Excluir Livro\"."));
+        add(new Paragraph("Após ter adicionado o livro, caso queira editar as informações dele, selecione-o na lista, faça a edição e depois clique em \"Salvar Edição\". Caso queira excluí-lo, selecione-o na lista e clique em \"Excluir Livro\"."));
         
         // Configura o evento de alteração da checkbox "terminouLeitura"
         terminouLeitura.addValueChangeListener(event -> toggleCamposConclusao());
@@ -63,9 +56,6 @@ public class MainView extends VerticalLayout {
         // Inicialmente, oculta os campos de data de conclusão e avaliação
         dataConclusao.setVisible(false);
         avaliacao.setVisible(false);
-
-        // Configura o botão "Adicionar Livro"
-        adicionarLivro.addClickListener(event -> adicionarLivro());
 
         // Configura os botões de edição e exclusão
         editarLivro.setEnabled(false);
@@ -210,4 +200,3 @@ public class MainView extends VerticalLayout {
         }
     }
 }
-
