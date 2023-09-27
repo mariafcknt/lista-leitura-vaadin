@@ -9,6 +9,8 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.icon.VaadinIcon;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -36,9 +38,25 @@ public class MainView extends VerticalLayout {
         setSpacing(true);
         setClassName("main-view");
 
+        // Defina o estilo de fundo para azul claro
+        //getStyle().set("background-color", "lightblue");
+
+       // Configura o evento de alteração da checkbox "terminouLeitura"
+        terminouLeitura.addValueChangeListener(event -> toggleCamposConclusao());
+
+        // Inicialmente, oculta os campos de data de conclusão e avaliação
+        dataConclusao.setVisible(false);
+        avaliacao.setVisible(false);
+
+        // Configura o botão "Adicionar Livro" com o ícone
+        adicionarLivro.setIcon(VaadinIcon.PLUS.create());
+        adicionarLivro.addClickListener(event -> adicionarLivro());
+
         // Adiciona o título "Adicione seus livros!" usando o elemento H1
         add(new H1("Adicione seus livros!"));
 
+        add(new Paragraph("Após ter adicionado o livro, caso queira editar as informações dele, selecione-o na tabela, faça a edição e depois clique em \"Salvar Edição\". Caso queira excluí-lo, selecione-o na tabela e clique em \"Excluir Livro\"."));
+        
         // Configura o evento de alteração da checkbox "terminouLeitura"
         terminouLeitura.addValueChangeListener(event -> toggleCamposConclusao());
 
@@ -192,3 +210,4 @@ public class MainView extends VerticalLayout {
         }
     }
 }
+
