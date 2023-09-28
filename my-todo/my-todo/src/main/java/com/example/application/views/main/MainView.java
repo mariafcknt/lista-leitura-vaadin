@@ -19,7 +19,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-@Route("livros")
+//@Route("livros")
+@Route("")
 public class MainView extends VerticalLayout {
 
     private HorizontalLayout nomeAutorLayout = new HorizontalLayout();
@@ -236,10 +237,10 @@ public class MainView extends VerticalLayout {
         }
     }
 }
-        }
+        //}
 
-        public void setAvaliacao(String avaliacao) {
-            this.avaliacao = avaliacao;
-        }
-    }
-}
+        //public void setAvaliacao(String avaliacao) {
+  //          this.avaliacao = avaliacao;
+        //}
+    //}
+//}
