@@ -1,5 +1,9 @@
 package com.example.application.views.main;
 
+//import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Tag;
+import com.vaadin.flow.router.Route;
+
 import com.example.application.LivroRepository;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -31,7 +35,7 @@ import org.springframework.stereotype.Repository;
 //@Route("livros")
 
 @Route("")
-@Component
+
 public class MainView extends VerticalLayout {
 
     private HorizontalLayout nomeAutorLayout = new HorizontalLayout();
@@ -199,7 +203,8 @@ public class MainView extends VerticalLayout {
     }
 
     @Entity
-    public static class Livro {
+    @Component
+    public  class Livro {
 
         @jakarta.persistence.Id
         @Id
