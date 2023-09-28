@@ -1,10 +1,14 @@
 package com.example.application.views.main;
 
+import com.example.application.LivroRepository;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -21,15 +25,13 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Div; // Importe Div para criar um contêiner
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-import com.example.application.views.main.MainView.Livro;
-
+import org.springframework.stereotype.Repository;
 
 //@Route("livros")
-@Component
+
 @Route("")
+@Component
 public class MainView extends VerticalLayout {
 
     private HorizontalLayout nomeAutorLayout = new HorizontalLayout();
@@ -49,7 +51,7 @@ public class MainView extends VerticalLayout {
     private Livro livroEmEdicao = null;
 
     @Autowired
-    private livroRepository livroRepository;
+    private LivroRepository livroRepository;
     //private List<Livro> livros = new ArrayList<>();
     //private List<Livro> getLivrosFromDatabase(){
         //return livroRepository.findAll();
@@ -109,7 +111,7 @@ public class MainView extends VerticalLayout {
         grid.setSelectionMode(SelectionMode.SINGLE);
         grid.asSingleSelect().addValueChangeListener(event -> editarLivro(event.getValue()));
         //grid.setItems(livros);
-        grid.setItems(getLivrosFromDatabase());
+        grid.setItems(livroRepository.findAll());
 
         // Define a cor de fundo azul claro e adiciona grades à grade
         grid.getStyle().set("border", "1px solid #ccc");
@@ -140,7 +142,7 @@ public class MainView extends VerticalLayout {
         );
 
         livroRepository.save(livro);
-        grid.setItems(getLivrosFromDatabase());
+        grid.setItems(livroRepository.findAll());
 
         // Limpa os campos após adicionar o livro
         limparCampos();
@@ -179,7 +181,7 @@ public class MainView extends VerticalLayout {
     private void excluirLivro() {
         if (livroEmEdicao != null) {
             livroRepository.delete(livroEmEdicao);
-            grid.setItems(getLivrosFromDatabase);
+            grid.setItems(livroRepository.findAll());
 
             limparCampos();
         }
@@ -199,6 +201,7 @@ public class MainView extends VerticalLayout {
     @Entity
     public static class Livro {
 
+        @jakarta.persistence.Id
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
@@ -258,6 +261,18 @@ public class MainView extends VerticalLayout {
         public void setAvaliacao(String avaliacao) {
             this.avaliacao = avaliacao;
         }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public Long getId() {
+            return id;
+        }
     }
+
+   // @Repository
+   // public static interface LivroRepository extends JpaRepository<Livro, Long> {
+   // }
 }
 
