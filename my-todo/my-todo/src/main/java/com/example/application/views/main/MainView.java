@@ -1,5 +1,11 @@
 package com.example.application.views.main;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.time.LocalDate;
+import java.util.List;
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.datepicker.DatePicker;
@@ -9,17 +15,20 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.template.Id;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Div; // Importe Div para criar um contêiner
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import com.example.application.views.main.MainView.Livro;
+
 
 //@Route("livros")
+@Component
 @Route("")
 public class MainView extends VerticalLayout {
 
@@ -39,7 +48,12 @@ public class MainView extends VerticalLayout {
     private Grid<Livro> grid = new Grid<>(Livro.class);
     private Livro livroEmEdicao = null;
 
-    private List<Livro> livros = new ArrayList<>();
+    @Autowired
+    private livroRepository livroRepository;
+    //private List<Livro> livros = new ArrayList<>();
+    //private List<Livro> getLivrosFromDatabase(){
+        //return livroRepository.findAll();
+   // }
 
     public MainView() {
         // Configurações iniciais
@@ -94,7 +108,8 @@ public class MainView extends VerticalLayout {
         grid.setColumns("nome", "autor", "terminouLeitura", "dataConclusao", "avaliacao");
         grid.setSelectionMode(SelectionMode.SINGLE);
         grid.asSingleSelect().addValueChangeListener(event -> editarLivro(event.getValue()));
-        grid.setItems(livros);
+        //grid.setItems(livros);
+        grid.setItems(getLivrosFromDatabase());
 
         // Define a cor de fundo azul claro e adiciona grades à grade
         grid.getStyle().set("border", "1px solid #ccc");
@@ -124,8 +139,8 @@ public class MainView extends VerticalLayout {
                 avaliacao.getValue()
         );
 
-        livros.add(livro);
-        grid.setItems(livros);
+        livroRepository.save(livro);
+        grid.setItems(getLivrosFromDatabase());
 
         // Limpa os campos após adicionar o livro
         limparCampos();
@@ -163,8 +178,8 @@ public class MainView extends VerticalLayout {
 
     private void excluirLivro() {
         if (livroEmEdicao != null) {
-            livros.remove(livroEmEdicao);
-            grid.setItems(livros);
+            livroRepository.delete(livroEmEdicao);
+            grid.setItems(getLivrosFromDatabase);
 
             limparCampos();
         }
@@ -181,12 +196,20 @@ public class MainView extends VerticalLayout {
         excluirLivro.setEnabled(false);
     }
 
+    @Entity
     public static class Livro {
+
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
         private String nome;
         private String autor;
         private boolean terminouLeitura;
         private LocalDate dataConclusao;
         private String avaliacao;
+
+        public Livro() {
+        }
 
         public Livro(String nome, String autor, boolean terminouLeitura, LocalDate dataConclusao, String avaliacao) {
             this.nome = nome;
@@ -237,10 +260,4 @@ public class MainView extends VerticalLayout {
         }
     }
 }
-        //}
 
-        //public void setAvaliacao(String avaliacao) {
-  //          this.avaliacao = avaliacao;
-        //}
-    //}
-//}
