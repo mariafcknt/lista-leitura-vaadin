@@ -131,13 +131,7 @@ public class MainView extends VerticalLayout {
     }
 
     private void adicionarLivro() {
-        Livro livro = new Livro(
-                /*nomeLivro.getValue(),
-                autorLivro.getValue(),
-                terminouLeitura.getValue(),
-                dataConclusao.getValue(),
-                avaliacao.getValue()*/
-        );
+        Livro livro = new Livro();
 
         livro.setNome(nomeLivro.getValue());
         livro.setAutor(autorLivro.getValue());
@@ -165,6 +159,7 @@ public class MainView extends VerticalLayout {
 
             editarLivro.setEnabled(true);
             excluirLivro.setEnabled(true);
+
         } else {
             limparCampos();
         }
@@ -177,8 +172,9 @@ public class MainView extends VerticalLayout {
             livroEmEdicao.setTerminouLeitura(terminouLeitura.getValue());
             livroEmEdicao.setDataConclusao(dataConclusao.getValue());
             livroEmEdicao.setAvaliacao(avaliacao.getValue());
-
-            grid.getDataProvider().refreshAll();
+            
+            livroRepository.save(livroEmEdicao);
+            grid.getDataProvider().refreshItem(livroEmEdicao);
 
             limparCampos();
         }
