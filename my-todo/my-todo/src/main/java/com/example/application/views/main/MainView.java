@@ -54,14 +54,11 @@ public class MainView extends VerticalLayout {
     private Grid<Livro> grid = new Grid<>(Livro.class);
     private Livro livroEmEdicao = null;
 
-    @Autowired
     private LivroRepository livroRepository;
-    //private List<Livro> livros = new ArrayList<>();
-    //private List<Livro> getLivrosFromDatabase(){
-        //return livroRepository.findAll();
-   // }
 
-    public MainView() {
+
+    public MainView(LivroRepository livroRepository) {
+        this.livroRepository = livroRepository;
         // Configurações iniciais
         setSpacing(true);
         setClassName("main-view");
@@ -70,19 +67,16 @@ public class MainView extends VerticalLayout {
         adicionarLivro.addClickListener(event -> adicionarLivro());
         adicionarLivro.getStyle().set("background-color", "lightblue");
         adicionarLivro.getStyle().set("color", "black");
-        adicionarLivro.setWidth("140px"); // Defina o tamanho desejado, por exemplo, "100px"
-        adicionarLivro.getStyle().set("font-size", "12px"); // Defina o tamanho da fonte desejado
+        adicionarLivro.setWidth("140px");
+        adicionarLivro.getStyle().set("font-size", "12px");
 
-        editarLivro.getStyle().set("font-size", "10px"); // Defina o tamanho da fonte desejado
-        excluirLivro.getStyle().set("font-size", "10px"); // Defina o tamanho da fonte desejado
-        editarLivro.setWidth("120px"); // Defina o tamanho desejado, por exemplo, "100px"
-        excluirLivro.setWidth("120px"); // Defina o tamanho desejado, por exemplo, "100px"
+        editarLivro.getStyle().set("font-size", "10px");
+        excluirLivro.getStyle().set("font-size", "10px");
+        editarLivro.setWidth("120px");
+        excluirLivro.setWidth("120px");
 
         // Crie um contêiner <div> para envolver o título
         Div tituloContainer = new Div();
-        //tituloContainer.getStyle().set("background-color", "lightgray"); // Define o fundo azul claro
-        //tituloContainer.getStyle().set("padding", "10px"); // Adiciona um espaçamento interno
-        //tituloContainer.getStyle().set("border-radius", "10px"); // Define a borda arredondada apenas na parte inferior
 
         // Adiciona o título "Adicione seus livros!" usando o elemento H1 dentro do contêiner
         H1 titulo = new H1("Lista de leitura - adicione seus livros!");
@@ -138,12 +132,20 @@ public class MainView extends VerticalLayout {
 
     private void adicionarLivro() {
         Livro livro = new Livro(
-                nomeLivro.getValue(),
+                /*nomeLivro.getValue(),
                 autorLivro.getValue(),
                 terminouLeitura.getValue(),
                 dataConclusao.getValue(),
-                avaliacao.getValue()
+                avaliacao.getValue()*/
         );
+
+        livro.setNome(nomeLivro.getValue());
+        livro.setAutor(autorLivro.getValue());
+        livro.setTerminouLeitura(terminouLeitura.getValue());
+        livro.setDataConclusao(dataConclusao.getValue());
+        livro.setAvaliacao(avaliacao.getValue());
+
+
 
         livroRepository.save(livro);
         grid.setItems(livroRepository.findAll());
@@ -202,82 +204,6 @@ public class MainView extends VerticalLayout {
         excluirLivro.setEnabled(false);
     }
 
-    @Entity
-    @Component
-    public  class Livro {
 
-        @jakarta.persistence.Id
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
-        private String nome;
-        private String autor;
-        private boolean terminouLeitura;
-        private LocalDate dataConclusao;
-        private String avaliacao;
-
-        public Livro() {
-        }
-
-        public Livro(String nome, String autor, boolean terminouLeitura, LocalDate dataConclusao, String avaliacao) {
-            this.nome = nome;
-            this.autor = autor;
-            this.terminouLeitura = terminouLeitura;
-            this.dataConclusao = dataConclusao;
-            this.avaliacao = avaliacao;
-        }
-
-        public String getNome() {
-            return nome;
-        }
-
-        public void setNome(String nome) {
-            this.nome = nome;
-        }
-
-        public String getAutor() {
-            return autor;
-        }
-
-        public void setAutor(String autor) {
-            this.autor = autor;
-        }
-
-        public boolean isTerminouLeitura() {
-            return terminouLeitura;
-        }
-
-        public void setTerminouLeitura(boolean terminouLeitura) {
-            this.terminouLeitura = terminouLeitura;
-        }
-
-        public LocalDate getDataConclusao() {
-            return dataConclusao;
-        }
-
-        public void setDataConclusao(LocalDate dataConclusao) {
-            this.dataConclusao = dataConclusao;
-        }
-
-        public String getAvaliacao() {
-            return avaliacao;
-        }
-
-        public void setAvaliacao(String avaliacao) {
-            this.avaliacao = avaliacao;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
-
-        public Long getId() {
-            return id;
-        }
-    }
-
-   // @Repository
-   // public static interface LivroRepository extends JpaRepository<Livro, Long> {
-   // }
 }
 
