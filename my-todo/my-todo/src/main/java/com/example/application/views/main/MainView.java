@@ -1,5 +1,19 @@
 package com.example.application.views.main;
 
+//import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Tag;
+import com.vaadin.flow.router.Route;
+
+import com.example.application.LivroRepository;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Component;
+
+import java.time.LocalDate;
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.datepicker.DatePicker;
@@ -9,18 +23,19 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.template.Id;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Div; // Importe Div para criar um contêiner
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.stereotype.Repository;
 
 //@Route("livros")
+
 @Route("")
+
 public class MainView extends VerticalLayout {
 
     private HorizontalLayout nomeAutorLayout = new HorizontalLayout();
@@ -39,9 +54,11 @@ public class MainView extends VerticalLayout {
     private Grid<Livro> grid = new Grid<>(Livro.class);
     private Livro livroEmEdicao = null;
 
-    private List<Livro> livros = new ArrayList<>();
+    private LivroRepository livroRepository;
 
-    public MainView() {
+
+    public MainView(LivroRepository livroRepository) {
+        this.livroRepository = livroRepository;
         // Configurações iniciais
         setSpacing(true);
         setClassName("main-view");
@@ -50,19 +67,16 @@ public class MainView extends VerticalLayout {
         adicionarLivro.addClickListener(event -> adicionarLivro());
         adicionarLivro.getStyle().set("background-color", "lightblue");
         adicionarLivro.getStyle().set("color", "black");
-        adicionarLivro.setWidth("140px"); // Defina o tamanho desejado, por exemplo, "100px"
-        adicionarLivro.getStyle().set("font-size", "12px"); // Defina o tamanho da fonte desejado
+        adicionarLivro.setWidth("140px");
+        adicionarLivro.getStyle().set("font-size", "12px");
 
-        editarLivro.getStyle().set("font-size", "10px"); // Defina o tamanho da fonte desejado
-        excluirLivro.getStyle().set("font-size", "10px"); // Defina o tamanho da fonte desejado
-        editarLivro.setWidth("120px"); // Defina o tamanho desejado, por exemplo, "100px"
-        excluirLivro.setWidth("120px"); // Defina o tamanho desejado, por exemplo, "100px"
+        editarLivro.getStyle().set("font-size", "10px");
+        excluirLivro.getStyle().set("font-size", "10px");
+        editarLivro.setWidth("120px");
+        excluirLivro.setWidth("120px");
 
         // Crie um contêiner <div> para envolver o título
         Div tituloContainer = new Div();
-        //tituloContainer.getStyle().set("background-color", "lightgray"); // Define o fundo azul claro
-        //tituloContainer.getStyle().set("padding", "10px"); // Adiciona um espaçamento interno
-        //tituloContainer.getStyle().set("border-radius", "10px"); // Define a borda arredondada apenas na parte inferior
 
         // Adiciona o título "Adicione seus livros!" usando o elemento H1 dentro do contêiner
         H1 titulo = new H1("Lista de leitura - adicione seus livros!");
@@ -94,7 +108,8 @@ public class MainView extends VerticalLayout {
         grid.setColumns("nome", "autor", "terminouLeitura", "dataConclusao", "avaliacao");
         grid.setSelectionMode(SelectionMode.SINGLE);
         grid.asSingleSelect().addValueChangeListener(event -> editarLivro(event.getValue()));
-        grid.setItems(livros);
+        //grid.setItems(livros);
+        grid.setItems(livroRepository.findAll());
 
         // Define a cor de fundo azul claro e adiciona grades à grade
         grid.getStyle().set("border", "1px solid #ccc");
@@ -116,16 +131,18 @@ public class MainView extends VerticalLayout {
     }
 
     private void adicionarLivro() {
-        Livro livro = new Livro(
-                nomeLivro.getValue(),
-                autorLivro.getValue(),
-                terminouLeitura.getValue(),
-                dataConclusao.getValue(),
-                avaliacao.getValue()
-        );
+        Livro livro = new Livro();
 
-        livros.add(livro);
-        grid.setItems(livros);
+        livro.setNome(nomeLivro.getValue());
+        livro.setAutor(autorLivro.getValue());
+        livro.setTerminouLeitura(terminouLeitura.getValue());
+        livro.setDataConclusao(dataConclusao.getValue());
+        livro.setAvaliacao(avaliacao.getValue());
+
+
+
+        livroRepository.save(livro);
+        grid.setItems(livroRepository.findAll());
 
         // Limpa os campos após adicionar o livro
         limparCampos();
@@ -142,6 +159,7 @@ public class MainView extends VerticalLayout {
 
             editarLivro.setEnabled(true);
             excluirLivro.setEnabled(true);
+
         } else {
             limparCampos();
         }
@@ -154,8 +172,9 @@ public class MainView extends VerticalLayout {
             livroEmEdicao.setTerminouLeitura(terminouLeitura.getValue());
             livroEmEdicao.setDataConclusao(dataConclusao.getValue());
             livroEmEdicao.setAvaliacao(avaliacao.getValue());
-
-            grid.getDataProvider().refreshAll();
+            
+            livroRepository.save(livroEmEdicao);
+            grid.getDataProvider().refreshItem(livroEmEdicao);
 
             limparCampos();
         }
@@ -163,8 +182,8 @@ public class MainView extends VerticalLayout {
 
     private void excluirLivro() {
         if (livroEmEdicao != null) {
-            livros.remove(livroEmEdicao);
-            grid.setItems(livros);
+            livroRepository.delete(livroEmEdicao);
+            grid.setItems(livroRepository.findAll());
 
             limparCampos();
         }
@@ -181,66 +200,6 @@ public class MainView extends VerticalLayout {
         excluirLivro.setEnabled(false);
     }
 
-    public static class Livro {
-        private String nome;
-        private String autor;
-        private boolean terminouLeitura;
-        private LocalDate dataConclusao;
-        private String avaliacao;
 
-        public Livro(String nome, String autor, boolean terminouLeitura, LocalDate dataConclusao, String avaliacao) {
-            this.nome = nome;
-            this.autor = autor;
-            this.terminouLeitura = terminouLeitura;
-            this.dataConclusao = dataConclusao;
-            this.avaliacao = avaliacao;
-        }
-
-        public String getNome() {
-            return nome;
-        }
-
-        public void setNome(String nome) {
-            this.nome = nome;
-        }
-
-        public String getAutor() {
-            return autor;
-        }
-
-        public void setAutor(String autor) {
-            this.autor = autor;
-        }
-
-        public boolean isTerminouLeitura() {
-            return terminouLeitura;
-        }
-
-        public void setTerminouLeitura(boolean terminouLeitura) {
-            this.terminouLeitura = terminouLeitura;
-        }
-
-        public LocalDate getDataConclusao() {
-            return dataConclusao;
-        }
-
-        public void setDataConclusao(LocalDate dataConclusao) {
-            this.dataConclusao = dataConclusao;
-        }
-
-        public String getAvaliacao() {
-            return avaliacao;
-        }
-
-        public void setAvaliacao(String avaliacao) {
-            this.avaliacao = avaliacao;
-        }
-    }
 }
-        //}
 
-        //public void setAvaliacao(String avaliacao) {
-  //          this.avaliacao = avaliacao;
-        //}
-    //}
-//}
